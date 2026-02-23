@@ -15,16 +15,16 @@ Thanks are due to Chris Stenton of the former Gnome Computers Ltd., who gracious
 
   * `doc/*`: Documentation in GCAL and PDF format.
   * `kicad/*`: KiCAD schematic and PCB files, reverse-engineered from scans of the original PCB.
-  * `ic3.bin`: IC3 (82S123 PROM) data, binary
-  * `lap.{bin,hex}`: IC3 (82S123 PROM) data -- original from Gnome.
+  * `ic3.bin`: IC3 (82S123 PROM) data, binary -- my recreation. TPROD identifies this as a Transputer Link, serial number 0.
+  * `lap.{bin,hex}`: IC3 (82S123 PROM) data -- original from Gnome. TPROD identifies this as a Transputer Link, serial number 47.
   * `ic4/lap11.{pld,jed,wcp}`: IC4 logic equations in WinCUPL format.
-  * `ic4_orig`: IC4 logic equations for PAL16L8 -- original from Gnome.
+  * `ic4_orig`: IC4 logic equations for PAL16L8 -- original from Gnome. Format unknown.
 
 ### Which files to program into the devices
 
 Use the original PROM file if you can. If you're programming 82S123s and accidentally programmed one with `ic3.bin`, you can reprogram it with `lap.bin` if you bypass the Blank Check. This works because blowing a fuse in an 82S123 sets the bit, and programming `lap.bin` only involves setting more bits.
 
-I've not been able to find a tool which can assemble the original IC4 logic (CUPL and ABEL rejected it). I suspect it might be written in PALASM2. PALASM and PALASM4 seem to use different syntax.
+I've not been able to find a tool which can assemble the original IC4 logic (CUPL and ABEL rejected it). I suspect it might be written in AMD's PLPL language. If that's the case, PALASM4 seems to be able to convert it to PALASM, but this fool's errand is left as an exercise for the reader. (To the someone who actually does it: please send me a PR!)
 
 ### About GCAL
 
@@ -79,6 +79,23 @@ The PAL data seems to use A3 to indicate FIQ status (1=FIQ active), but the Link
 
 There are also two bytes programmed in locations 1 and 2 which are the same in every copy. These areas are marked Reserved in the Podule specification, so should be programmed to zero!  I suspect this might be related to the copy-protection on some of the Gnome software.
 
+The image from Gnome is identified by their `TPROD` utility as having serial number 47. I suspect this is encoded into the second and third bytes of the Podule ID PROM:
+
+```
+0000: 00 f0 02 24 00 0e 00 00
+0008: 04 f0 02 24 00 0e 00 00
+0010: 01 f0 02 24 00 0e 00 00
+0018: 05 f0 02 24 00 0e 00 00
+         ^  ^^
+
+Serial number 47 = &2F
+
+16-but ui16le at prom[1] = (serialnumber << 4)
+
+This leaves bits W[1:0] (code width), IS (interrupt status relocation) and CD (chunks present) clear.
+```
+
+These are then converted into licence keys or "Podule keys" which are checked by `afserver`, `nbserver` and `Server14`. The algorithm is currently unknown.
 
 ### IC4: Address decoder PAL.
 
