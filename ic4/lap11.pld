@@ -1,0 +1,58 @@
+Name     TLinkAddrDec;
+PartNo   lap11;
+Date     23/02/2026;
+Revision 1;
+Designer philpem;
+Company  philpem;
+Assembly TransputerLinkPodule;
+Location IC4;
+Device   g16v8;
+
+/**
+ * Gnome Computers Ltd. Transputer Link Podule.
+ * IC4 address decode PAL.
+ * Recreated as a GAL16V8 by Phil Pemberton, Feb 2026.
+ */
+
+/* Inputs */
+PIN 1  = LA4;
+PIN 2  = !IOWR;
+PIN 3  = !IORD;
+PIN 4  = !PS;
+PIN 5  = LA13;
+PIN 6  = !RST;
+PIN 7  = !CSR_RESET;
+/* Pin 8 NC */
+PIN 9  = IMS_InputInt;
+PIN 11 = IMS_OutputInt;
+
+/* Outputs */
+PIN 12 = !PIRQ;
+PIN 13 = PROM_A4;
+PIN 14 = !IMS_CS;
+PIN 15 = !CSRRead;
+PIN 16 = CSRWrite;
+PIN 17 = IMS_Reset;
+PIN 18 = !PROM_CS;
+/* Pin 19 NC */
+
+
+/* Logic equations */
+
+/* PROM selected in lower half of Podule range, read only */
+PROM_CS = PS & !LA13 & IORD;
+
+/* Inmos Link selected in upper half of Podule range, LA4 low, read-write */
+IMS_CS  = PS & (IORD # IOWR) & LA13 & !LA4;
+
+/* CSR register selected in upper half, LA4 high */
+CSRRead  = PS & IORD & LA13 & LA4;
+CSRWrite = PS & IOWR & LA13 & LA4;
+
+/* IRQ triggered by Inmos Link chip */
+Interrupt = IMS_InputInt # IMS_OutputInt;
+PIRQ    = Interrupt;
+PROM_A4 = Interrupt;
+
+/* Inmos Link resets if Podule bus resets or CSR reset active */
+IMS_Reset = RST # CSR_RESET;
