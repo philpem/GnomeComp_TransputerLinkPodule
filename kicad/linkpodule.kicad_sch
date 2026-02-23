@@ -6905,7 +6905,7 @@
 	)
 	(wire
 		(pts
-			(xy 196.85 82.55) (xy 208.28 82.55)
+			(xy 196.85 82.55) (xy 209.55 82.55)
 		)
 		(stroke
 			(width 0)
@@ -7962,6 +7962,16 @@
 			(type default)
 		)
 		(uuid "75ee61f1-cd25-48a2-b7f1-33004c9987ae")
+	)
+	(wire
+		(pts
+			(xy 196.85 85.09) (xy 209.55 85.09)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "76118ea9-eb32-40c7-890f-21bb1240235a")
 	)
 	(wire
 		(pts
@@ -10362,6 +10372,16 @@
 			(justify left bottom)
 		)
 		(uuid "a9c8193e-9e19-49c8-bc1e-c7090b0c51bd")
+	)
+	(label "B_BD3"
+		(at 199.39 85.09 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "aa2696cd-5a30-46aa-a73a-39162893eaf2")
 	)
 	(label "B_BD3"
 		(at 162.56 219.71 0)
