@@ -9,12 +9,22 @@ Provided mine are used together, they should be equivalent to the originals.
 
 Please get in touch if you have access to an original Podule and would be willing to dump the PROM, PAL or both.
 
+Thanks are due to Chris Stenton of the former Gnome Computers Ltd., who graciously dug into his archives to find some blank PCBs and the PAL/PROM programming files, which were used to build this.
+
 ## Files included
 
   * `doc/*`: Documentation in GCAL and PDF format.
   * `kicad/*`: KiCAD schematic and PCB files, reverse-engineered from scans of the original PCB.
   * `ic3.bin`: IC3 (82S123 PROM) data, binary
+  * `lap.{bin,hex}`: IC3 (82S123 PROM) data -- original from Gnome.
   * `ic4/lap11.{pld,jed,wcp}`: IC4 logic equations in WinCUPL format.
+  * `ic4_orig`: IC4 logic equations for PAL16L8 -- original from Gnome.
+
+### Which files to program into the devices
+
+Use the original PROM file if you can. If you're programming 82S123s and accidentally programmed one with `ic3.bin`, you can reprogram it with `lap.bin` if you bypass the Blank Check. This works because blowing a fuse in an 82S123 sets the bit, and programming `lap.bin` only involves setting more bits.
+
+I've not been able to find a tool which can assemble the original IC4 logic (CUPL and ABEL rejected it). I suspect it might be written in PALASM2. PALASM and PALASM4 seem to use different syntax.
 
 ### About GCAL
 
@@ -49,11 +59,6 @@ The bipolar PROM cross-references I use are:
 
 ### IC3: Podule ID PROM.
 
-```
-0000:  00 00 00 24 00 0E 00 00  00 00 00 00 00 00 00 00
-0010:  01 00 00 24 00 0E 00 00  00 00 00 00 00 00 00 00
-```
-
 The PROM has A3 grounded, and A4 is driven by the PAL to indicate an interrupt is being signalled.
 This means that only two banks of 8 bytes are ever addressed.
 
@@ -70,7 +75,16 @@ The Podule ID is an old-style ID (not an ECID) and decodes as follows:
 7:  &00  - Country code
 ```
 
+The PAL data seems to use A3 to indicate FIQ status (1=FIQ active), but the Link Podule doesn't use FIQs.
+
+There are also two bytes programmed in locations 1 and 2 which are the same in every copy. These areas are marked Reserved in the Podule specification, so should be programmed to zero!  I suspect this might be related to the copy-protection on some of the Gnome software.
+
+
 ### IC4: Address decoder PAL.
+
+This is a PAL16L8 in the original design, but it can be replaced with a GAL16V8. If you use a PAL16L8, program it with the original Gnome Computers JEDEC file. If you use a GAL16V8, use my recreated WinCUPL programming files.
+
+25ns speed grade is plenty fast enough. I used a 10ns chip and it worked fine.
 
 
 ## Bill of Materials and assembly notes
@@ -124,3 +138,4 @@ Bolts   M2.5 10mm (4 off)                 Farnell     149-462      0.0074 (100)
 PALS    IC4  LAP11.JED
 PROMS   IC3  LAP.HEX
 ```
+

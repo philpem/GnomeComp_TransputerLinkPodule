@@ -1,0 +1,77 @@
+DEVICE LAP1 (P16L8)
+
+"PAL for Link Adapter Podule"
+
+PIN
+    la4     = 1  (input combinatorial)
+    pwe     = 2  (input combinatorial)
+    pre     = 3  (input combinatorial)
+    ps      = 4  (input combinatorial)
+    la13    = 5  (input combinatorial)
+    rsta    = 6  (input combinatorial)
+    rstb    = 7  (input combinatorial)
+    p8      = 8  (input combinatorial)
+    iint    = 9  (input combinatorial)
+    oint    = 11 (input combinatorial)
+    /irq    = 12 (output active_low combinatorial)
+    /irqb   = 13 (io active_low combinatorial)
+    /cs     = 14 (io active_low combinatorial)
+    /rc     = 15 (io active_low combinatorial)
+    /wc     = 16 (io active_low combinatorial)
+    /rsth   = 17 (io active_low combinatorial)
+    /id     = 18 (io active_low combinatorial)
+    /d3     = 19 (output active_low combinatorial);
+
+BEGIN
+    ENABLE (irq) = /irqb;
+    ENABLE (irqb) = 1;
+    ENABLE (cs) = 1;
+    ENABLE (rc) = 1;
+    ENABLE (wc) = 1;
+    ENABLE (rsth) = 1;
+    ENABLE (id) = 1;
+    ENABLE (d3) = rc;
+
+    irq     = 1;
+
+    irqb    = /iint * /oint;
+
+    cs      = /ps * la13 * /la4 * /pre
+            + /ps * la13 * /la4 * /pwe;
+
+    rc      = /ps * la13 * la4 * /pre;
+
+    wc      = /ps * la13 * la4 * /pwe;
+
+    rsth    = rsta * rstb;
+
+    id      = /ps * /la13 * /pre;
+
+    d3      = rstb;
+END.
+
+TEST_VECTORS
+
+IN la4, pwe, pre, ps, la13, rsta, rstb, p8, iint, oint;
+OUT /irq;
+I_O /irqb, /cs, /rc, /wc, /rsth, /id;
+OUT /d3;
+
+BEGIN
+"l p p p l r r p i o i i c r w r i d"
+"a w r s a s s 8 i i r r s c c s d 3"
+"4 e e   1 t t   n n q q       t    "
+"        3 a b   t t   b       h    "
+
+ 1 1 1 1 1 1 1 1 1 1 X X X X X X X X;
+ 1 1 1 1 1 1 1 1 0 0 Z L H H H L H Z;   "Idle state"
+ 0 1 0 0 0 1 1 1 0 0 Z L H H H L L Z;   "ID read"
+ 0 0 1 0 1 1 1 1 0 0 Z L L H H L H Z;   "LA write"
+ 0 1 0 0 1 1 1 1 0 0 Z L L H H L H Z;   "LA read"
+ 1 0 1 0 1 1 1 1 0 0 Z L H H L L H Z;   "Control write"
+ 1 1 0 0 1 1 0 1 0 0 Z L H L H H H H;   "Control read, rstb low"
+ 1 1 0 0 1 1 1 1 0 0 Z L H L H L H L;   "Control read, rstb high"
+ 0 1 1 1 0 0 1 1 0 0 Z L H H H H H Z;   "Reset via rsta"
+ 0 1 1 1 0 1 1 1 1 0 L H H H H L H Z;   "Input int"
+ 0 1 1 1 0 1 1 1 0 1 L H H H H L H Z;   "Output int"
+END.

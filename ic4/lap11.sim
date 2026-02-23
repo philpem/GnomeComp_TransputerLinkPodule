@@ -1,0 +1,77 @@
+%SIGNAL
+PIN  15 = !CSRRead 
+PIN  16 =  CSRWrite 
+PIN  19 =  CSR_D3_O 
+PIN   7 = !CSR_RESET 
+PIN  14 = !IMS_CS 
+PIN   9 =  IMS_InputInt 
+PIN  11 =  IMS_OutputInt 
+PIN  17 =  IMS_Reset 
+PIN   3 = !IORD 
+PIN   2 = !IOWR 
+PIN   1 =  LA4 
+PIN   5 =  LA13 
+PIN  12 = !PIRQ 
+PIN  13 =  PROM_A4 
+PIN  18 = !PROM_CS 
+PIN   6 = !PRST 
+PIN   4 = !PS 
+PIN   8 =  p8 
+%END
+
+%FIELD
+%END
+
+%EQUATION
+CSRRead =>
+    !IORD & LA4 & LA13 & !PS
+
+!CSRWrite =>
+    !IOWR & LA4 & LA13 & !PS
+
+CSR_D3_O =>
+    !CSR_RESET
+
+CSR_D3_O.oe  =>
+    !CSRRead
+
+IMS_CS =>
+    !IOWR & !LA4 & LA13 & !PS
+  # !IORD & !LA4 & LA13 & !PS
+
+IMS_Reset =>
+    !PRST
+  # !CSR_RESET
+
+PIRQ =>
+    1 
+
+PIRQ.oe  =>
+    PROM_A4
+
+PROM_A4 =>
+    IMS_InputInt
+  # IMS_OutputInt
+
+PROM_CS =>
+    !IORD & !LA13 & !PS
+
+CSRRead.oe  =>
+    1 
+
+CSRWrite.oe  =>
+    1 
+
+IMS_CS.oe  =>
+    1 
+
+IMS_Reset.oe  =>
+    1 
+
+PROM_A4.oe  =>
+    1 
+
+PROM_CS.oe  =>
+    1 
+
+%END

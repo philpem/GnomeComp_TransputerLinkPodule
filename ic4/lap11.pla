@@ -1,0 +1,46 @@
+# Berkeley PLA format generated using
+#
+# CUPL(WM)        5.0a Serial# MW-10400000
+# Device          g16v8ma  Library DLIB-h-40-8
+# Created         Mon Feb 23 21:55:09 2026
+# Name            TLinkAddrDec
+# Partno          lap11
+# Revision        1
+# Date            23/02/2026
+# Designer        philpem
+# Company         philpem
+# Assembly        TransputerLinkPodule
+# Location        IC4
+#
+# Inputs  1 !CSRRead CSRWrite CSR_D3_O 
+#         !CSR_RESET !IMS_CS IMS_InputInt IMS_OutputInt 
+#         IMS_Reset !IORD !IOWR LA4 
+#         LA13 !PIRQ PROM_A4 !PROM_CS 
+#         !PRST !PS p8 
+# Outputs !CSRRead !CSRWrite CSR_D3_O CSR_D3_O.oe 
+#         !IMS_CS IMS_Reset !PIRQ PIRQ.oe 
+#         PROM_A4 !PROM_CS CSRRead.oe CSRWrite.oe 
+#         IMS_CS.oe IMS_Reset.oe PROM_A4.oe PROM_CS.oe 
+.i 19
+.o 16
+.p 19
+---------1-11----1- 1~~~~~~~~~~~~~~~
+----------111----1- ~1~~~~~~~~~~~~~~
+----1-------------- ~~1~~~~~~~~~~~~~
+-1----------------- ~~~1~~~~~~~~~~~~
+----------101----1- ~~~~1~~~~~~~~~~~
+---------1-01----1- ~~~~1~~~~~~~~~~~
+----------------1-- ~~~~~1~~~~~~~~~~
+----1-------------- ~~~~~1~~~~~~~~~~
+1------------------ ~~~~~~1~~~~~~~~~
+--------------1---- ~~~~~~~1~~~~~~~~
+------1------------ ~~~~~~~~1~~~~~~~
+-------1----------- ~~~~~~~~1~~~~~~~
+---------1--0----1- ~~~~~~~~~1~~~~~~
+1------------------ ~~~~~~~~~~1~~~~~
+1------------------ ~~~~~~~~~~~1~~~~
+1------------------ ~~~~~~~~~~~~1~~~
+1------------------ ~~~~~~~~~~~~~1~~
+1------------------ ~~~~~~~~~~~~~~1~
+1------------------ ~~~~~~~~~~~~~~~1
+.end

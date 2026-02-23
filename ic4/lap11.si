@@ -1,0 +1,37 @@
+Name     TLinkAddrDec;
+PartNo   lap11;
+Date     23/02/2026;
+Revision 1;
+Designer philpem;
+Company  philpem;
+Assembly TransputerLinkPodule;
+Location IC4;
+Device   g16v8;
+
+
+ORDER: LA4, %1, !IOWR, %1, !IORD, %1, !PS, %1, LA13, %1, !PRST, %1, !CSR_RESET, %1, p8, %1, IMS_InputInt, %1, IMS_OutputInt, %2,
+       !PIRQ, %1, PROM_A4, %1, !IMS_CS, %1, !CSRRead, %1, CSRWrite, %1, IMS_Reset, %1, !PROM_CS, %1, CSR_D3_O;
+
+VECTORS:
+/* 1 1 1 1 1 1 1 1 1 1 X X X X X X X X  */  /* For some reason WinCUPL throws spurious "user expected (X)" errors on this line -- it's supposed to be don't-care. */
+$MSG "Idle state";
+ 1 1 1 1 1 1 1 1 0 0 Z L H H H L H Z
+$MSG "ID read";
+ 0 1 0 0 0 1 1 1 0 0 Z L H H H L L Z
+$MSG "LA write";
+ 0 0 1 0 1 1 1 1 0 0 Z L L H H L H Z
+$MSG "LA read";
+ 0 1 0 0 1 1 1 1 0 0 Z L L H H L H Z
+$MSG "Control write";
+ 1 0 1 0 1 1 1 1 0 0 Z L H H L L H Z
+$MSG "Control read, rstb low";
+ 1 1 0 0 1 1 0 1 0 0 Z L H L H H H H
+$MSG "Control read, rstb high";
+ 1 1 0 0 1 1 1 1 0 0 Z L H L H L H L
+$MSG "Reset via rsta";
+ 0 1 1 1 0 0 1 1 0 0 Z L H H H H H Z
+$MSG "Input int";
+ 0 1 1 1 0 1 1 1 1 0 L H H H H L H Z
+$MSG "Output int";
+ 0 1 1 1 0 1 1 1 0 1 L H H H H L H Z
+$MSG "Run complete";

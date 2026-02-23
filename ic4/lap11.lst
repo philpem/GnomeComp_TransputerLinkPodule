@@ -1,0 +1,87 @@
+LISTING FOR LOGIC DESCRIPTION FILE: lap11.pld                        Page 1
+
+CUPL(WM): Universal Compiler for Programmable Logic
+Version 5.0a Serial# MW-10400000
+Copyright (c) 1983, 1998 Logical Devices, Inc.
+Created Mon Feb 23 21:55:09 2026
+
+  1:Name     TLinkAddrDec;
+  2:PartNo   lap11;
+  3:Date     23/02/2026;
+  4:Revision 1;
+  5:Designer philpem;
+  6:Company  philpem;
+  7:Assembly TransputerLinkPodule;
+  8:Location IC4;
+  9:Device   g16v8;
+ 10:
+ 11:/**
+ 12: * Gnome Computers Ltd. Transputer Link Podule.
+ 13: * IC4 address decode PAL.
+ 14: * Recreated as a GAL16V8 by Phil Pemberton, Feb 2026.
+ 15: */
+ 16:
+ 17:/* Inputs */
+ 18:PIN 1  = LA4;
+ 19:PIN 2  = !IOWR;
+ 20:PIN 3  = !IORD;
+ 21:PIN 4  = !PS;
+ 22:PIN 5  = LA13;
+ 23:PIN 6  = !PRST;
+ 24:PIN 7  = !CSR_RESET;
+ 25:/* Pin 8 NC */  PIN 8 = p8;
+ 26:PIN 9  = IMS_InputInt;
+ 27:PIN 11 = IMS_OutputInt;
+ 28:
+ 29:/* Outputs */
+ 30:PIN 12 = !PIRQ;
+ 31:PIN 13 = PROM_A4;
+ 32:PIN 14 = !IMS_CS;
+ 33:PIN 15 = !CSRRead;
+ 34:PIN 16 = CSRWrite;
+ 35:PIN 17 = IMS_Reset;
+ 36:PIN 18 = !PROM_CS;
+ 37:PIN 19 = CSR_D3_O;
+ 38:
+ 39:
+ 40:/* Logic equations */
+ 41:
+ 42:/* PROM selected in lower half of Podule range, read only */
+ 43:PROM_CS = PS & !LA13 & IORD;
+ 44:
+ 45:/* Inmos Link selected in upper half of Podule range, LA4 low, read-write */
+ 46:IMS_CS  = PS & (IORD # IOWR) & LA13 & !LA4;
+ 47:
+ 48:/* CSR register selected in upper half, LA4 high */
+ 49:CSRRead  = PS & IORD & LA13 & LA4;
+ 50:!CSRWrite = PS & IOWR & LA13 & LA4;
+ 51:
+ 52:/* Detect interrupt - switches to PROM second bank to indicate */
+ 53:PROM_A4 = IMS_InputInt # IMS_OutputInt;
+
+LISTING FOR LOGIC DESCRIPTION FILE: lap11.pld                        Page 2
+
+CUPL(WM): Universal Compiler for Programmable Logic
+Version 5.0a Serial# MW-10400000
+Copyright (c) 1983, 1998 Logical Devices, Inc.
+Created Mon Feb 23 21:55:09 2026
+
+ 54:
+ 55:/* Emulate an open-drain output for the Podule IRQ */
+ 56:PIRQ    = 'b'1;
+ 57:PIRQ.OE = PROM_A4;
+ 58:
+ 59:/* Inmos Link resets if Podule bus resets or CSR reset active */
+ 60:IMS_Reset = PRST # CSR_RESET;
+ 61:
+ 62:/* D3 pin - CSR bit 3, ChipReset latch readback */
+ 63:CSR_D3_O    = CSR_RESET;
+ 64:CSR_D3_O.OE = CSRRead;
+ 65:
+ 66:
+ 67:
+
+
+
+Jedec Fuse Checksum       (5551)
+Jedec Transmit Checksum   (1356)

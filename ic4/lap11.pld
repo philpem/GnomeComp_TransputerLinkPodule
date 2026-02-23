@@ -20,9 +20,9 @@ PIN 2  = !IOWR;
 PIN 3  = !IORD;
 PIN 4  = !PS;
 PIN 5  = LA13;
-PIN 6  = !RST;
+PIN 6  = !PRST;
 PIN 7  = !CSR_RESET;
-/* Pin 8 NC */
+/* Pin 8 NC */  PIN 8 = p8;
 PIN 9  = IMS_InputInt;
 PIN 11 = IMS_OutputInt;
 
@@ -34,7 +34,7 @@ PIN 15 = !CSRRead;
 PIN 16 = CSRWrite;
 PIN 17 = IMS_Reset;
 PIN 18 = !PROM_CS;
-/* Pin 19 NC */
+PIN 19 = CSR_D3_O;
 
 
 /* Logic equations */
@@ -47,12 +47,19 @@ IMS_CS  = PS & (IORD # IOWR) & LA13 & !LA4;
 
 /* CSR register selected in upper half, LA4 high */
 CSRRead  = PS & IORD & LA13 & LA4;
-CSRWrite = PS & IOWR & LA13 & LA4;
+!CSRWrite = PS & IOWR & LA13 & LA4;
 
-/* IRQ triggered by Inmos Link chip */
-Interrupt = IMS_InputInt # IMS_OutputInt;
-PIRQ    = Interrupt;
-PROM_A4 = Interrupt;
+/* Detect interrupt - switches to PROM second bank to indicate */
+PROM_A4 = IMS_InputInt # IMS_OutputInt;
+
+/* Emulate an open-drain output for the Podule IRQ */
+PIRQ    = 'b'1;
+PIRQ.OE = PROM_A4;
 
 /* Inmos Link resets if Podule bus resets or CSR reset active */
-IMS_Reset = RST # CSR_RESET;
+IMS_Reset = PRST # CSR_RESET;
+
+/* D3 pin - CSR bit 3, ChipReset latch readback */
+CSR_D3_O    = CSR_RESET;
+CSR_D3_O.OE = CSRRead;
+
