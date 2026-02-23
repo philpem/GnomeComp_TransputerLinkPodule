@@ -3,7 +3,7 @@ LISTING FOR LOGIC DESCRIPTION FILE: lap11.pld                        Page 1
 CUPL(WM): Universal Compiler for Programmable Logic
 Version 5.0a Serial# MW-10400000
 Copyright (c) 1983, 1998 Logical Devices, Inc.
-Created Mon Feb 23 21:55:09 2026
+Created Mon Feb 23 22:18:02 2026
 
   1:Name     TLinkAddrDec;
   2:PartNo   lap11;
@@ -64,7 +64,7 @@ LISTING FOR LOGIC DESCRIPTION FILE: lap11.pld                        Page 2
 CUPL(WM): Universal Compiler for Programmable Logic
 Version 5.0a Serial# MW-10400000
 Copyright (c) 1983, 1998 Logical Devices, Inc.
-Created Mon Feb 23 21:55:09 2026
+Created Mon Feb 23 22:18:02 2026
 
  54:
  55:/* Emulate an open-drain output for the Podule IRQ */
@@ -84,4 +84,4 @@ Created Mon Feb 23 21:55:09 2026
 
 
 Jedec Fuse Checksum       (5551)
-Jedec Transmit Checksum   (1356)
+Jedec Transmit Checksum   (134f)
