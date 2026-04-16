@@ -1,0 +1,40 @@
+Name     TRAMRstAnaErr;
+PartNo   tmp21;
+Date     16/04/2026;
+Revision 1;
+Designer philpem;
+Company  philpem;
+Assembly TRAMMotherboardPodule;
+Location IC7;
+Device   g16v8;
+
+
+ORDER: URST, %1, HRST, %1, S0SSRST, %1, HOST, %1, SLOT0, %1, UANA, %1, HANA, %1, S0SSANA, %1, DS0ERR, %1, SSERR, %2,
+       !HERR, %1, SNERR, %1, !UERR, %1, !S0SSERR, %1, !SNANA, %1, !S0ANA, %1, !SNRST, %1, !S0RST;
+
+VECTORS:
+$MSG "Idle";
+ 0 0 0 0 0 0 0 0 0 0 H 1 L H L L L L
+$MSG "Test ERR - sserr asserted, slot0";
+ 0 0 0 0 1 0 0 0 0 1 H 1 L L L L L L
+$MSG "Test ERR - snerr asserted on slot0";
+ 0 0 0 0 1 0 0 0 0 0 H 0 L L L L L L
+$MSG "Test ERR - snerr asserted, non-slot0";
+ 0 0 0 0 0 0 0 0 0 0 H 0 H H L L L L
+$MSG "Test ERR - snerr asserted, host mode";
+ 0 0 0 1 0 0 0 0 0 0 L 0 L H L L L L
+$MSG "Test ERR - snerr asserted, host mode slot0";
+ 0 0 0 1 1 0 0 0 0 0 H 0 L L L L L L
+$MSG "Test ERR - ds0err asserted, slot0";
+ 0 0 0 0 1 0 0 0 1 0 H 0 H L L L L L
+$MSG "Test RST/ANA - urst only";
+ 1 0 0 0 0 0 0 0 0 0 H 1 L H L L H H
+$MSG "Test RST/ANA - urst, host mode";
+ 1 0 0 1 0 0 0 0 0 0 H 1 L H L L L L
+$MSG "Test RST/ANA - urst+hrst, host mode";
+ 1 1 0 1 0 0 0 0 0 0 H 1 L H L L H H
+$MSG "Test RST/ANA - urst+hrst, host mode slot0";
+ 1 1 0 1 1 0 0 0 0 0 H 1 L H L L L H
+$MSG "Test RST/ANA - urst+s0ssrst, host mode slot0";
+ 1 0 1 1 1 0 0 0 0 0 H 1 L H L L H L
+$MSG "Run complete";

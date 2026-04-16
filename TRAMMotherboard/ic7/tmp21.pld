@@ -1,0 +1,86 @@
+Name     TRAMRstAnaErr;
+PartNo   tmp21;
+Date     16/04/2026;
+Revision 1;
+Designer philpem;
+Company  philpem;
+Assembly TRAMMotherboardPodule;
+Location IC7;
+Device   g16v8;
+
+/**
+ * Gnome Computers Ltd. TRAM Motherboard.
+ * IC7 Reset / Analyse / Error PAL.
+ * Recreated as a GAL16V8 by Phil Pemberton, Apr 2026.
+ *
+ * Signal polarities (from the original tmp21.pal comment block):
+ *   urst    - active high input
+ *   hrst    - active high input
+ *   s0ssrst - active high input
+ *   s0rst   - active high output
+ *   snrst   - active high output
+ *
+ *   uana    - active high input
+ *   hana    - active high input
+ *   s0ssana - active high input
+ *   s0ana   - active high output
+ *   snana   - active high output
+ *
+ *   ds0err  - active high input
+ *   snerr   - active low input
+ *   s0sserr - active low output
+ *   sserr   - active high input
+ *   uerr    - active high output
+ *   herr    - active low output
+ */
+
+/* Inputs */
+PIN 1  = URST;
+PIN 2  = HRST;
+PIN 3  = S0SSRST;
+PIN 4  = HOST;
+PIN 5  = SLOT0;
+PIN 6  = UANA;
+PIN 7  = HANA;
+PIN 8  = S0SSANA;
+PIN 9  = DS0ERR;
+PIN 11 = SSERR;
+
+/* Outputs (and one input on an I/O pin) */
+PIN 12 = !HERR;
+PIN 13 = SNERR;     /* Declared without leading / in PLPL; used as input only */
+PIN 14 = !UERR;
+PIN 15 = !S0SSERR;
+PIN 16 = !SNANA;
+PIN 17 = !S0ANA;
+PIN 18 = !SNRST;
+PIN 19 = !S0RST;
+
+
+/* Logic equations
+ *
+ * Equations written as "signal = expr" in the original PLPL are transcribed
+ * directly. Equations written as "/signal = expr" in PLPL become
+ * "SIGNAL = !(expr)" here (both forms are semantically identical).
+ */
+
+S0SSERR = SSERR
+        # SLOT0 & !SNERR;
+
+HERR    = HOST & (DS0ERR # !SLOT0 & !SNERR);
+
+UERR    = !( !HOST & (DS0ERR # !SLOT0 & !SNERR) );
+
+S0RST   = !( HOST & HRST
+           # !HOST & URST );
+
+SNRST   = !( SLOT0 & S0SSRST
+           # !SLOT0 & HOST & HRST
+           # !SLOT0 & !HOST & URST );
+
+S0ANA   = !( HOST & HANA
+           # !HOST & UANA );
+
+SNANA   = !( SLOT0 & S0SSANA
+           # !SLOT0 & HOST & HANA
+           # !SLOT0 & !HOST & UANA );

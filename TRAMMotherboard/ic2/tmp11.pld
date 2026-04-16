@@ -1,0 +1,79 @@
+Name     TMPPoduleBus;
+PartNo   tmp11;
+Date     16/04/2026;
+Revision 1;
+Designer philpem;
+Company  philpem;
+Assembly TRAMMotherboardPodule;
+Location IC2;
+Device   g16v8;
+
+/**
+ * Gnome Computers Ltd. TRAM Motherboard.
+ * IC2 address decode PAL.
+ * Recreated as a GAL16V8 by Phil Pemberton, Feb 2026.
+ */
+
+/* Inputs */
+PIN 1  = PS;      /* Podule select (active-low on bus -> high = deselected) */
+PIN 2  = WE;      /* Podule Write Enable */
+PIN 3  = RE;      /* Podule Read Enable */
+PIN 4  = LA4;     /* Address bit 4 */
+PIN 5  = LA13;    /* Address bit 13 */
+PIN 6  = HERR;    /* Host ERR (from tmp21, /HERR on bus) */
+PIN 7  = IMSK;    /* Interrupt mask */
+PIN 8  = OINT;    /* Link output interrupt */
+PIN 9  = IINT;    /* Link input interrupt */
+PIN 11 = ITYP;    /* Interrupt type select: high=FIQ, low=IRQ */
+
+/* Outputs */
+PIN 12 = !IRQ;    /* Podule IRQ output, open-drain */
+PIN 13 = !FIQ;    /* Podule FIQ output, open-drain */
+PIN 14 = !FIQB;   /* FIQ enable/feedback */
+PIN 15 = !D4;     /* Data bit 4 readback (ERR status) */
+PIN 16 = !WC;     /* Write Control strobe */
+PIN 17 = !IRQB;   /* IRQ enable/feedback */
+PIN 18 = !LAEN;   /* Link Adapter chip enable */
+PIN 19 = !IDEN;   /* ID PROM enable */
+
+
+/* Open-drain IRQ/FIQ: signal always driven to 1 (pin low),
+ * enabled only when the corresponding "B" gate is asserted. */
+FIQ  = 'b'1;
+FIQ.OE = !FIQB;
+
+IRQ  = 'b'1;
+IRQ.OE = !IRQB;
+
+/* D4 readback: presents /HERR on D4 during control-register reads
+ * (Podule selected, upper half, LA4 high, read strobe active). */
+D4   = !HERR;
+D4.OE = !PS & LA13 & LA4 & !RE;
+
+/* Write control strobe: asserted on control register writes
+ * (upper half, LA4 high). */
+WC   = !PS & LA13 & LA4 & !WE;
+/* WC.OE = 1 */
+
+/* Link adapter chip enable: asserted on link adapter reads or writes
+ * (upper half, LA4 low). */
+LAEN = !PS & LA13 & !LA4 & !WE
+     # !PS & LA13 & !LA4 & !RE;
+/* LAEN.OE = 1 */
+
+/* ID PROM enable: asserted on reads from lower half (LA13 low). */
+IDEN = !PS & !LA13 & !RE;
+/* IDEN.OE = 1 */
+
+/* IRQ gate: asserted when a non-FIQ interrupt is active and unmasked,
+ * or a host error is active. Inverted form follows the PLPL source. */
+IRQB = !( !ITYP & IMSK & IINT
+        # !ITYP & IMSK & OINT
+        # IMSK & !HERR);
+/* IRQB.OE = 1 */
+
+/* FIQ gate: asserted when a FIQ-type interrupt is active and unmasked. */
+FIQB = !(   ITYP & IMSK & IINT
+          # ITYP & IMSK & OINT  );
+/* FIQB.OE = 1 */
+

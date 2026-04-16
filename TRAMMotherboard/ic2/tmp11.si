@@ -1,0 +1,28 @@
+Name     TMPPoduleBus;
+PartNo   tmp11;
+Date     16/04/2026;
+Revision 1;
+Designer philpem;
+Company  philpem;
+Assembly TRAMMotherboardPodule;
+Location IC2;
+Device   g16v8;
+
+
+ORDER: PS, %1, WE, %1, RE, %1, LA4, %1, LA13, %1, HERR, %1, IMSK, %1, OINT, %1, IINT, %1, ITYP, %2,
+       !IRQ, %1, !FIQ, %1, !FIQB, %1, !D4, %1, !WC, %1, !IRQB, %1, !LAEN, %1, !IDEN;
+
+VECTORS:
+$MSG "Idle - Podule deselected";
+ 1 1 1 0 0 1 0 0 0 0 Z Z L Z H L H H
+$MSG "Host error, IRQ-type mask enabled";
+ 1 1 1 0 0 0 1 0 0 0 L Z L Z H H H H
+$MSG "Output int, FIQ-type mask enabled";
+ 1 1 1 0 0 1 1 1 0 1 Z L H Z H L H H
+$MSG "Control read - error active + FIQ";
+ 0 1 0 1 1 0 1 1 0 1 L L H L H H H H
+$MSG "Control read - no error + FIQ";
+ 0 1 0 1 1 1 1 1 0 1 Z L H H H L H H
+$MSG "ID PROM read";
+ 0 1 0 1 0 1 1 1 0 1 Z L H Z H L H L
+$MSG "Run complete";

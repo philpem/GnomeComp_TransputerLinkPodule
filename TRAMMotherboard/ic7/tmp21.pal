@@ -1,0 +1,107 @@
+DEVICE tmp21 (P16L8)
+
+"Rst/Ana/Err PAL for Transputer Motherboard Podule"
+
+PIN
+    urst    = 1  (input combinatorial)
+    hrst    = 2  (input combinatorial)
+    s0ssrst = 3  (input combinatorial)
+    host    = 4  (input combinatorial)
+    slot0   = 5  (input combinatorial)
+    uana    = 6  (input combinatorial)
+    hana    = 7  (input combinatorial)
+    s0ssana = 8  (input combinatorial)
+    ds0err  = 9  (input combinatorial)
+    sserr   = 11 (input combinatorial)
+    /herr   = 12 (output active_low combinatorial)
+     snerr  = 13 (io active_low combinatorial)
+    /uerr   = 14 (io active_low combinatorial)
+    /s0sserr= 15 (io active_low combinatorial)
+    /snana  = 16 (io active_low combinatorial)
+    /s0ana  = 17 (io active_low combinatorial)
+    /snrst  = 18 (io active_low combinatorial)
+    /s0rst  = 19 (output active_low combinatorial);
+
+"   urst - active high input
+    hrst - active high input
+    s0ssrst - active high input
+    s0rst - active high output
+    snrst - active high output
+
+    uana - active high input
+    hana - active high input
+    s0ssana - active high input
+    s0ana - active high output
+    snana - active high output
+
+    ds0err - active high input
+    snerr - active low input (but note inversion above)
+    s0sserr - active low output
+    sserr - active high input
+    uerr - active high output
+    herr - active low output
+"
+
+BEGIN
+    ENABLE (s0rst) = 1;
+    ENABLE (snrst) = 1;
+    ENABLE (s0ana) = 1;
+    ENABLE (snana) = 1;
+
+    ENABLE (s0sserr) = 1;
+    ENABLE (uerr) = 1;
+    ENABLE (herr) = 1;
+
+    s0sserr =   sserr
+            +   slot0 * /snerr;
+
+    herr    =   host * (ds0err + (/slot0 * /snerr));
+
+   /uerr    =   /host * (ds0err + (/slot0 * /snerr));
+
+   /s0rst   =   host * hrst
+            +   /host * urst;
+
+   /snrst   =   slot0 * s0ssrst
+            +   /slot0 * host * hrst
+            +   /slot0 * /host * urst;
+
+   /s0ana   =   host * hana
+            +   /host * uana;
+
+   /snana   =   slot0 * s0ssana
+            +   /slot0 * host * hana
+            +   /slot0 * /host * uana;
+END.
+
+TEST_VECTORS
+
+IN urst, hrst, s0ssrst, host, slot0, uana, hana, s0ssana, ds0err, sserr;
+OUT /herr;
+I_O snerr, /uerr, /s0sserr, /snana, /s0ana, /snrst;
+OUT /s0rst;
+
+BEGIN
+"u h s h s u h s d s h s u s s s s s"
+"r r 0 o l a a 0 s s e n e 0 n 0 n 0"
+"s s s s o n n s 0 e r e r s a a r r"
+"t t s t t a a s e r r r r s n n s s"
+"    r   0     a r r   r   e a a t t"
+"    s         n           r        "
+"    t         a           r        "
+ 0 0 0 0 0 0 0 0 0 0 H 1 L H L L L L;   "Idle"
+
+ 0 0 0 0 1 0 0 0 0 1 H 1 L L L L L L;   "Test ERR"
+ 0 0 0 0 1 0 0 0 0 0 H 0 L L L L L L;
+ 0 0 0 0 0 0 0 0 0 0 H 0 H H L L L L;
+ 0 0 0 1 0 0 0 0 0 0 L 0 L H L L L L;
+ 0 0 0 1 1 0 0 0 0 0 H 0 L L L L L L;
+ 0 0 0 0 1 0 0 0 1 0 H 0 H L L L L L;
+
+
+ 1 0 0 0 0 0 0 0 0 0 H 1 L H L L H H;   "Test RST & hence ANA"
+ 1 0 0 1 0 0 0 0 0 0 H 1 L H L L L L;
+ 1 1 0 1 0 0 0 0 0 0 H 1 L H L L H H;
+ 1 1 0 1 1 0 0 0 0 0 H 1 L H L L L H;
+ 1 0 1 1 1 0 0 0 0 0 H 1 L H L L H L;
+END.

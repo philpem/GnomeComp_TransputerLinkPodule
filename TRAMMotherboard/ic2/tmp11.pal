@@ -1,0 +1,76 @@
+DEVICE tmp11 (P16L8)
+
+"Podule bus PAL for Transputer Motherboard Podule"
+
+PIN
+    ps      = 1  (input combinatorial)
+    we      = 2  (input combinatorial)
+    re      = 3  (input combinatorial)
+    la4     = 4  (input combinatorial)
+    la13    = 5  (input combinatorial)
+    herr    = 6  (input combinatorial)
+    imsk    = 7  (input combinatorial)
+    oint    = 8  (input combinatorial)
+    iint    = 9  (input combinatorial)
+    ityp    = 11 (input combinatorial)
+    /irq    = 12 (output active_low combinatorial)
+    /fiq    = 13 (io active_low combinatorial)
+    /fiqb   = 14 (io active_low combinatorial)
+    /d4     = 15 (io active_low combinatorial)
+    /wc     = 16 (io active_low combinatorial)
+    /irqb   = 17 (io active_low combinatorial)
+    /laen   = 18 (io active_low combinatorial)
+    /iden   = 19 (output active_low combinatorial);
+
+BEGIN
+    ENABLE (fiq) = /fiqb;
+    ENABLE (irq) = /irqb;
+    ENABLE (fiqb) = 1;
+    ENABLE (d4) = /ps * la13 * la4 * /re;
+    ENABLE (wc) = 1;
+    ENABLE (irqb) = 1;
+    ENABLE (laen) = 1;
+    ENABLE (iden) = 1;
+
+    fiq     =   1;
+
+    irq     =   1;
+
+    d4      =   /herr;
+
+    wc      =   /ps * la13 * la4 * /we;
+
+    laen    =   /ps * la13 * /la4 * /we
+            +   /ps * la13 * /la4 * /re;
+
+    iden    =   /ps * /la13 * /re;
+
+    irqb    = /(/ityp * imsk * iint
+            +   /ityp * imsk * oint
+            +   imsk * /herr);
+
+    fiqb    = /(ityp * imsk * iint
+            +   ityp * imsk * oint);
+
+END.
+
+TEST_VECTORS
+
+IN ps, we, re, la4, la13, herr, imsk, oint, iint, ityp;
+OUT /irq;
+I_O /fiq, /fiqb, /d4, /wc, /irqb, /laen;
+OUT /iden;
+
+BEGIN
+"p w r l l h i o i i i f f d w i l i"
+"s e e a a e m i i t r i i 4 c r a d"
+"      4 1 r s n n y q q q     q e e"
+"        3 r k t t p     b     b n n"
+
+ 1 1 1 0 0 1 0 0 0 0 Z Z L Z H L H H;
+ 1 1 1 0 0 0 1 0 0 0 L Z L Z H H H H;
+ 1 1 1 0 0 1 1 1 0 1 Z L H Z H L H H;
+ 0 1 0 1 1 0 1 1 0 1 L L H L H H H H;
+ 0 1 0 1 1 1 1 1 0 1 Z L H H H L H H;
+ 0 1 0 1 0 1 1 1 0 1 Z L H Z H L H L;
+END.

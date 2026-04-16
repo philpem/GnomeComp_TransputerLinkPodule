@@ -1,0 +1,15 @@
+# WinCUPL compiler outputs
+*.abs
+*.jed
+*.lst
+*.pla
+
+# WinCUPL simulator outputs
+*.so
+*.sim
+*.wo
+
+# Editor swap files
+*.swp
+*.swo
+*~
