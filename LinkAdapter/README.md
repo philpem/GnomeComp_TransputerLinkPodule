@@ -4,10 +4,8 @@ Phil Pemberton, Feb 2026.
 
 This is a recreation of the Transputer Link Podule by Gnome Computers Ltd.
 
-Unfortunately I don't have access to a real Link Podule, so I've recreated the PAL equations and PROM contents from the descriptions in the manual.
-Provided mine are used together, they should be equivalent to the originals.
-
-Please get in touch if you have access to an original Podule and would be willing to dump the PROM, PAL or both.
+The PLD equations were initially created by inference from the reverse-engineered schematic, but Chris of Gnome Computers later provided the original programming files in PLPL format.
+The current WinCUPL equations are based on my reverse-engineered ones, but incorporate the corrected logic from the original PAL equations.
 
 Thanks are due to Chris Stenton of the former Gnome Computers Ltd., who graciously dug into his archives to find some blank PCBs and the PAL/PROM programming files, which were used to build this.
 
@@ -15,74 +13,9 @@ Thanks are due to Chris Stenton of the former Gnome Computers Ltd., who gracious
 
   * `doc/*`: Documentation in GCAL and PDF format.
   * `kicad/*`: KiCAD schematic and PCB files, reverse-engineered from scans of the original PCB.
-  * `ic3.bin`: IC3 (82S123 PROM) data, binary -- my recreation. TPROD identifies this as a Transputer Link, serial number 0.
   * `lap.{bin,hex}`: IC3 (82S123 PROM) data -- original from Gnome. TPROD identifies this as a Transputer Link, serial number 47.
   * `ic4/lap11.{pld,jed,wcp}`: IC4 logic equations in WinCUPL format.
   * `ic4_orig`: IC4 logic equations for PAL16L8 -- original from Gnome. Format unknown.
-  * `kobold.c`: Kobold, a brutish licence key forger for Gnome's Transputer `afserver`, `nbserver`, `m2server` and `server14` iservers. Included for documentary, and historical preservation purposes only.
-
-### Gnome Transputer product licensing
-
-The Gnome port of the standard Inmos `iserver` seems to have no licence checks.
-
-The other Transputer host servers (`afserver`, `nbserver`, `m2server` and `server14`) have licensing which is based on the Podule serial number.
-
-The Podule serial number is stored in the second and third bytes of the Podule ID PROM: `serial = (rom[1] >> 4) + (rom[2] << 4)`. The low nibble of `rom[1]` must remain at zero.
-
-From here, you can use Kobold to generate licence keys:
-
-```
-$ gcc -o kobold kobold.c
-
-$ ./kobold
-Usage: ./kobold [-p PRODUCT] [ -d HEX_KEY_TO_DECRYPT | -e SERIAL_NUMBER [-s STARTING_KEY] ]
-
-Kobold decrypts and finds Podule keys for Gnome Computers Transputer products.
-
-Use -pN to select the product:
-   0: afserver, nbserver, m2server (default)
-   1: server14
-
-May Kurtulmak bless your fingertips!
-
-# Generate random product keys for serial number 69
-$ ./kobold -p0 -e47
-Serial 69 (0x45) for afserver/m2server/nbserver => Key 313a5167
-$ ./kobold -p1 -e47
-Serial 69 (0x45) for server14 => Key 2f51eee5
-
-# Generate product keys starting from a certain value
-$ ./kobold -p1 -e69 -s55aa55aa
-Serial 69 (0x45) for server14 => Key 55aa798a
-
-# Decrypt product keys
-$ ./kobold -p1 -d55aa798a
-Key 55aa798a for server14 => serial 69 (0x45)
-```
-
-The keys you've generated need to go in `$.library.keys` on the drive you have selected when you run the `*server`. **Note that the Gnome tools only check the first 20 keys in the file!**.
-
-#### Some notes on the algorithm
-
-The algorithm used is a one-way function which contains a linear-congruential-generator-like structure. Both the multiplicative constants are prime, and the additive constant is the same for all the `iserver`s. The multiplied output and adder output are XORed together to produce an accumulator value. A compression function picks three spaced-out 3-bit values from the accumulator: these are used to select three 4-bit numbers which are used to generate the final result. This result needs to match the serial number of the card for the licence to be considered valid.
-
-I'd tell you why the key finder was called Kobold, but explaining a joke would kill it. If you don't get the reference, assume it means something like "Kobold Outputs Benign Obviously-Legal Data". For educational purposes only, not for use in the State of Delaware, void where prohibited, may cause cancer if operated in the State of California.
-
-### Which files to program into the devices
-
-Use the original PROM file if you can. If you're programming 82S123s and accidentally programmed one with `ic3.bin`, you can reprogram it with `lap.bin` if you bypass the Blank Check. This works because blowing a fuse in an 82S123 sets the bit, and programming `lap.bin` only involves setting more bits.
-
-I've not been able to find a tool which can assemble the original IC4 logic (CUPL and ABEL rejected it). I suspect it might be written in AMD's PLPL language. If that's the case, PALASM4 seems to be able to convert it to PALASM, but this fool's errand is left as an exercise for the reader. (To the someone who actually does it: please send me a PR!)
-
-### About GCAL
-
-The documents for Gnome products were prepared using the University of Cambridge GCAL system, developed by Philip Hazel and [mentioned in his autobiography](https://gwern.net/doc/cs/algorithm/2017-hazel.pdf#page=48) (and very few other places).
-
-GCAL had a successor, SGCAL, which is similarly lightly documented on the public internet. The [source code to version 1.33](https://web.archive.org/web/20151030064313/https://www-uxsup.csx.cam.ac.uk/~bjh21/sgcal_1.33.orig.tar.gz) is preserved, but precious little else. I haven't tried to use SGCAL.
-
-The GCAL manual is preserved in the `doc` directory, and has been converted to PDF format.
-
-Unsurprisingly, [GCAL output is supported by the Aspic utility](https://manpages.ubuntu.com/manpages/trusty/man1/aspic.1.html), which converts a text description of an line-art graphic into EPS, SVG or GCAL line-art.
 
 ## Assembly instructions
 
